@@ -13,11 +13,17 @@ function chunkText(text) {
   while (start < text.length) {
     const end = Math.min(start + CHUNK_SIZE, text.length);
     chunks.push(text.slice(start, end));
-    start = Math.max(end - CHUNK_OVERLAP, 0);
+
+    if (end === text.length) {
+      break; // REQUIRED to terminate
+    }
+
+    start = end - CHUNK_OVERLAP;
   }
 
   return chunks;
 }
+
 
 async function scanRepo() {
     console.log("Starting repo scan...");
