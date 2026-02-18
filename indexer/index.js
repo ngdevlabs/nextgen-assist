@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import glob from "glob";
+import { globSync } from "glob";
 import path from "path";
 
 const REPO_ROOT = "/repos";
@@ -20,7 +20,7 @@ function chunkText(text) {
 }
 
 async function scanRepo() {
-  const files = glob.sync("**/*.*", {
+  const files = globSync("**/*.*", {
     cwd: REPO_ROOT,
     ignore: ["**/node_modules/**", "**/.git/**"]
   });
