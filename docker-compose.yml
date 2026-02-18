@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  orchestrator:
+    image: node:20
+    container_name: ng-orchestrator
+    working_dir: /app
+    volumes:
+      - ./orchestrator:/app
+      - ./repos:/repos
+      - ./logs:/logs
+    env_file:
+      - .env
+    command: sleep infinity
+
+  indexer:
+    image: node:20
+    container_name: ng-indexer
+    working_dir: /app
+    volumes:
+      - ./indexer:/app
+      - ./repos:/repos
+      - ./logs:/logs
+    env_file:
+      - .env
+    command: sleep infinity
+
+  slack:
+    image: node:20
+    container_name: ng-slack
+    working_dir: /app
+    volumes:
+      - ./slack:/app
+      - ./logs:/logs
+    env_file:
+      - .env
+    command: sleep infinity

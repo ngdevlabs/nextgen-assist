@@ -1,0 +1,11 @@
+# runtime
+logs/
+repos/
+memory/
+.env
+
+# node
+node_modules/
+
+# os
+.DS_Store
