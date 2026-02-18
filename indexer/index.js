@@ -20,12 +20,10 @@ function chunkText(text) {
 }
 
 async function scanRepo() {
-  const files = globSync("**/*.*", {
-    cwd: REPO_ROOT,
-    ignore: ["**/node_modules/**", "**/.git/**"]
-  });
-
-  for (const file of files) {
+  for (const file of globSync("**/*.*", {
+        cwd: REPO_ROOT,
+        ignore: ["**/node_modules/**", "**/.git/**"]
+        })) {
     const fullPath = path.join(REPO_ROOT, file);
     const content = await fs.readFile(fullPath, "utf8");
     const chunks = chunkText(content);
