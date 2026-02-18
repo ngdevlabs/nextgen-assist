@@ -28,6 +28,7 @@ async function scanRepo() {
         console.log(`Processing ${file}`);
         const fullPath = path.join(REPO_ROOT, file);
         const content = await fs.readFile(fullPath, "utf8");
+        console.log(`Chunking ${file}`);
         const chunks = chunkText(content);
         console.log(`${file}: ${chunks.length} chunks`);
     }
