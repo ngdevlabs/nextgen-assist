@@ -59,6 +59,10 @@ async function scanRepo() {
     }
 }
 
-scanRepo().catch(console.error);
-
-await db.end();
+try {
+  await scanRepo();
+} catch (err) {
+  console.error(err);
+} finally {
+  await db.end();
+}
