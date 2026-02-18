@@ -20,15 +20,18 @@ function chunkText(text) {
 }
 
 async function scanRepo() {
-  for (const file of globSync("**/*.*", {
-        cwd: REPO_ROOT,
-        ignore: ["**/node_modules/**", "**/.git/**"]
-        })) {
-    const fullPath = path.join(REPO_ROOT, file);
-    const content = await fs.readFile(fullPath, "utf8");
-    const chunks = chunkText(content);
-    console.log(`${file}: ${chunks.length} chunks`);
-  }
+    console.log("Starting repo scan...");
+    for (const file of globSync("**/*.*", {
+    cwd: REPO_ROOT,
+    ignore: ["**/node_modules/**", "**/.git/**"]
+    })) {
+        console.log(`Processing ${file}`);
+        const fullPath = path.join(REPO_ROOT, file);
+        const content = await fs.readFile(fullPath, "utf8");
+        const chunks = chunkText(content);
+        console.log(`${file}: ${chunks.length} chunks`);
+    }
+    console.log(`Found ${files.length} files`);
 }
 
 scanRepo().catch(console.error);
