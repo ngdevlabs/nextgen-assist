@@ -15,7 +15,7 @@ function chunkText(text) {
     chunks.push(text.slice(start, end));
 
     if (end === text.length) {
-      break; // REQUIRED to terminate
+      break; 
     }
 
     start = end - CHUNK_OVERLAP;
@@ -38,7 +38,6 @@ async function scanRepo() {
         const chunks = chunkText(content);
         console.log(`${file}: ${chunks.length} chunks`);
     }
-    console.log(`Found ${files.length} files`);
 }
 
 scanRepo().catch(console.error);
