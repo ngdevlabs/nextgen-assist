@@ -39,7 +39,7 @@ await db.connect();
 
 async function embed(text) {
   const res = await openai.embeddings.create({
-    model: "text-embedding-3-large",
+    model: "text-embedding-3-small",
     input: text
   });
   return res.data[0].embedding;
