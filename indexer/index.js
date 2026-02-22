@@ -68,7 +68,7 @@ async function scanRepo() {
             await db.query(
             `INSERT INTO code_chunks (repo, file_path, chunk_index, content, embedding)
             VALUES ($1, $2, $3, $4, $5)`,
-            [getRepoName(file), file, i, chunk, embedding]
+            [getRepoName(file), file, i, chunk, `[${embedding.join(",")}]`]
             );
             
             i++;
