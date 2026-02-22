@@ -18,7 +18,7 @@ async function embed(text) {
       "anthropic-version": "2023-06-01"
     },
     body: JSON.stringify({
-      model: "claude-3-opus-20240229",
+      model: "voyage-code-3",
       input: text
     })
   });
