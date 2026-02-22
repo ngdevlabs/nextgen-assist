@@ -2,29 +2,12 @@ import fs from "fs-extra";
 import { globSync } from "glob";
 import path from "path";
 import pkg from "pg";
-import fetch from "node-fetch";
+import OpenAI from "openai";
 const { Client } = pkg;
 
 const REPO_ROOT = "/repos";
 const CHUNK_SIZE = 800;
 const CHUNK_OVERLAP = 100;
-
-async function embed(text) {
-  const res = await fetch("https://api.anthropic.com/v1/embeddings", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.CLAUDE_API_KEY,
-      "anthropic-version": "2023-06-01"
-    },
-    body: JSON.stringify({
-      model: "voyage-code-3",
-      input: text
-    })
-  });
-  const json = await res.json();
-  return json.data[0].embedding;
-}
 
 function chunkText(text) {
   const chunks = [];
@@ -47,7 +30,20 @@ function chunkText(text) {
 const db = new Client({
   connectionString: process.env.POSTGRES_URL
 });
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
 await db.connect();
+
+async function embed(text) {
+  const res = await openai.embeddings.create({
+    model: "text-embedding-3-large",
+    input: text
+  });
+  return res.data[0].embedding;
+}
 
 async function scanRepo() {
     function getRepoName(filePath) {
