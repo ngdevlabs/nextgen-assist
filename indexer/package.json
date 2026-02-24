@@ -5,10 +5,10 @@
   "main": "index.js",
   "dependencies": {
     "chokidar": "^5.0.0",
-    "pg": "^8.11.3",
     "fs-extra": "^11.2.0",
     "glob": "^10.3.10",
-    "openai": "^4.38.0"
+    "openai": "^4.38.0",
+    "pg": "^8.11.3"
   },
   "scripts": {
     "index": "node --max-old-space-size=768 index.js"
