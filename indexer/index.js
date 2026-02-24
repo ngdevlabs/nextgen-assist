@@ -56,6 +56,32 @@ async function scanRepo() {
         return filePath.split(path.sep)[0];
     }
     console.log("Starting repo scan...");
+
+    const currentFiles = new Set(
+        globSync("**/*.*", {
+            cwd: REPO_ROOT,
+            ignore: ["**/node_modules/**", "**/.git/**"]
+        })
+    );
+
+    const dbFiles = await db.query(
+    `SELECT repo, file_path FROM indexed_files`
+    );
+
+    for (const row of dbFiles.rows) {
+    if (!currentFiles.has(row.file_path)) {
+        await db.query(
+        `DELETE FROM code_chunks WHERE repo = $1 AND file_path = $2`,
+        [row.repo, row.file_path]
+        );
+
+        await db.query(
+        `DELETE FROM indexed_files WHERE repo = $1 AND file_path = $2`,
+        [row.repo, row.file_path]
+        );
+    }
+    }
+
     for (const file of globSync("**/*.*", {
     cwd: REPO_ROOT,
     ignore: ["**/node_modules/**", "**/.git/**"]
