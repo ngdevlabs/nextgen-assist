@@ -3,11 +3,17 @@ import { globSync } from "glob";
 import path from "path";
 import pkg from "pg";
 import OpenAI from "openai";
+import crypto from "crypto";
 const { Client } = pkg;
 
 const REPO_ROOT = "/repos";
 const CHUNK_SIZE = 800;
 const CHUNK_OVERLAP = 100;
+
+function hashContent(text) {
+  return crypto.createHash("sha256").update(text).digest("hex");
+}
+
 
 function chunkText(text) {
   const chunks = [];
@@ -56,11 +62,28 @@ async function scanRepo() {
     })) {
         const fullPath = path.join(REPO_ROOT, file);
         const content = await fs.readFile(fullPath, "utf8");
-        console.log(`Chunking ${file}`);
+        const contentHash = hashContent(content);
+        const repo = getRepoName(file);
+
+        // check existing hash
+        const existing = await db.query(
+            `SELECT content_hash FROM indexed_files WHERE repo = $1 AND file_path = $2`,
+            [repo, file]
+        );
+
+        if (existing.rowCount && existing.rows[0].content_hash === contentHash) {
+            continue; // unchanged file → skip
+        }
+
+        await db.query(
+            `DELETE FROM code_chunks WHERE repo = $1 AND file_path = $2`,
+            [repo, file]
+        );
+
         const chunks = chunkText(content);
         console.log(`${file}: ${chunks.length} chunks`);
-
         let i = 0;
+
         for (const chunk of chunks) {
 
             const embedding = await embed(chunk);
@@ -68,12 +91,23 @@ async function scanRepo() {
             await db.query(
             `INSERT INTO code_chunks (repo, file_path, chunk_index, content, embedding)
             VALUES ($1, $2, $3, $4, $5)`,
-            [getRepoName(file), file, i, chunk, `[${embedding.join(",")}]`]
+            [repo, file, i, chunk, `[${embedding.join(",")}]`]
             );
             
             i++;
 
         }
+
+        await db.query(
+            `
+            INSERT INTO indexed_files (repo, file_path, content_hash)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (repo, file_path)
+            DO UPDATE SET content_hash = EXCLUDED.content_hash
+            `,
+            [repo, file, contentHash]
+        );
+
 
     }
 }
