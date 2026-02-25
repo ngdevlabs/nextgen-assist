@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
+    "fs-extra": "^11.3.3",
+    "glob": "^13.0.6",
+    "pg": "^8.18.0",
+    "pkg": "^5.8.1"
+  }
+}
